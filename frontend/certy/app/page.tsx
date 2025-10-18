@@ -38,9 +38,6 @@ export default function HomePage() {
             <Link href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground">
               How It Works
             </Link>
-            <Link href="/verify" className="text-sm text-muted-foreground hover:text-foreground">
-              Verify Certificate
-            </Link>
           </nav>
           <div className="flex items-center gap-3">
             {isLoggedIn ? (

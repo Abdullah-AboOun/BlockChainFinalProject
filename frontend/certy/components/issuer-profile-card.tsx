@@ -36,8 +36,12 @@ export function IssuerProfileCard() {
   const handleLogout = () => {
     // Clear localStorage
     localStorage.removeItem("issuerAddress")
-    // Redirect to home
+    // Redirect to home and refresh
     router.push("/")
+    // Force a hard refresh to clear all component states
+    setTimeout(() => {
+      window.location.reload()
+    }, 100)
   }
 
   const handleDashboard = () => {
