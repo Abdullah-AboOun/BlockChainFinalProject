@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -20,6 +20,15 @@ export default function IssuerLoginPage() {
   const [selectedWallet, setSelectedWallet] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const issuerAddress = localStorage.getItem("issuerAddress")
+    if (issuerAddress) {
+      setIsLoggedIn(true)
+      router.push("/issuer/dashboard")
+    }
+  }, [])
 
   const handleEmailLogin = (e: React.FormEvent) => {
     e.preventDefault()

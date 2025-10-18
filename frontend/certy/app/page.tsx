@@ -1,3 +1,6 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -5,6 +8,20 @@ import { Shield, FileCheck, Users, Lock, Globe } from "lucide-react"
 import { IssuerProfileCard } from "@/components/issuer-profile-card"
 
 export default function HomePage() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Check if issuer is logged in
+    const issuerAddress = localStorage.getItem("issuerAddress")
+    setIsLoggedIn(!!issuerAddress)
+    setIsLoading(false)
+  }, [])
+
+  if (isLoading) {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -26,16 +43,26 @@ export default function HomePage() {
             </Link>
           </nav>
           <div className="flex items-center gap-3">
-            <IssuerProfileCard />
-            <Button variant="ghost" asChild>
-              <Link href="/issuer/login">Login</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/register-issuer">Register as Issuer</Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/verify">Verify Certificate</Link>
-            </Button>
+            {isLoggedIn ? (
+              <>
+                <IssuerProfileCard />
+                <Button variant="outline" asChild>
+                  <Link href="/verify">Verify Certificate</Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/issuer/login">Login</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/register-issuer">Register as Issuer</Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/verify">Verify Certificate</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </header>

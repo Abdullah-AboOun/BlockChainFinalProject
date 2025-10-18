@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { WalletConnectButton } from "@/components/wallet-connect-button"
 import { ChainSwitcher } from "@/components/chain-switcher"
 import { useWeb3 } from "@/contexts/web3-context"
@@ -8,9 +9,18 @@ import { Button } from "@/components/ui/button"
 import { Shield, FileCheck, Wallet, AlertCircle, Building2 } from "lucide-react"
 import Link from "next/link"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { IssuerProfileCard } from "@/components/issuer-profile-card"
 
 export default function DashboardPage() {
   const { isConnected, address } = useWeb3()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const issuerAddress = localStorage.getItem("issuerAddress")
+    setIsLoggedIn(!!issuerAddress)
+    setIsLoading(false)
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">
@@ -22,8 +32,13 @@ export default function DashboardPage() {
             <span className="text-xl font-semibold">CertifyChain</span>
           </Link>
           <div className="flex items-center gap-3">
-            {isConnected && <ChainSwitcher />}
-            <WalletConnectButton />
+            {isLoggedIn && <IssuerProfileCard />}
+            {!isLoggedIn && (
+              <>
+                {isConnected && <ChainSwitcher />}
+                <WalletConnectButton />
+              </>
+            )}
           </div>
         </div>
       </header>

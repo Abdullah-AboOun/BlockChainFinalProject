@@ -26,6 +26,7 @@ import {
 } from "lucide-react"
 import { getCertificateById, type StoredCertificate } from "@/lib/storage"
 import { WalletConnectButton } from "@/components/wallet-connect-button"
+import { IssuerProfileCard } from "@/components/issuer-profile-card"
 
 export default function VerifyPage() {
   const searchParams = useSearchParams()
@@ -34,9 +35,15 @@ export default function VerifyPage() {
   const [isSearching, setIsSearching] = useState(false)
   const [searched, setSearched] = useState(false)
   const [error, setError] = useState("")
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   // Check if ID is in URL params
   useEffect(() => {
+    const issuerAddress = localStorage.getItem("issuerAddress")
+    setIsLoggedIn(!!issuerAddress)
+    setIsLoading(false)
+
     const id = searchParams.get("id")
     if (id) {
       setCertificateId(id)
@@ -84,10 +91,8 @@ export default function VerifyPage() {
             <span className="text-xl font-semibold">CertifyChain</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" asChild>
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
-            <WalletConnectButton />
+            {isLoggedIn && <IssuerProfileCard />}
+            {!isLoggedIn && <WalletConnectButton />}
           </div>
         </div>
       </header>

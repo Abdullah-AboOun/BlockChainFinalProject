@@ -111,7 +111,6 @@ export default function IssuerDashboardPage() {
           <div className="flex items-center gap-3">
             <IssuerProfileCard />
             <ChainSwitcher />
-            <WalletConnectButton />
           </div>
         </div>
       </header>
@@ -236,39 +235,37 @@ export default function IssuerDashboardPage() {
             ) : (
               <div className="space-y-4">
                 {certificates.slice(0, 5).map((cert) => (
-                  <div key={cert.id} className="flex items-center justify-between rounded-lg border p-4">
-                    <div className="flex-1">
-                      <div className="mb-1 flex items-center gap-2">
-                        <p className="font-semibold">{cert.recipientName}</p>
-                        <Badge variant={cert.isRevoked ? "destructive" : "default"} className="text-xs">
-                          {cert.isRevoked ? "Revoked" : "Active"}
-                        </Badge>
+                  <div key={cert.id} className="flex items-center justify-between rounded-lg border p-4 w-full">
+                      <div className="flex-1">
+                        <div className="mb-1 flex items-center gap-2">
+                          <p className="font-semibold">{cert.recipientName}</p>
+                          <Badge variant={cert.isRevoked ? "destructive" : "default"} className="text-xs">
+                            {cert.isRevoked ? "Revoked" : "Active"}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{cert.certificateType}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Issued: {new Date(cert.issueDate).toLocaleDateString()}
+                        </p>
+                        <p className="mt-2 font-mono text-xs text-muted-foreground">{cert.id}</p>
                       </div>
-                      <p className="text-sm text-muted-foreground">{cert.certificateType}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        Issued: {new Date(cert.issueDate).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-right">
-                        <p className="mb-1 font-mono text-xs text-muted-foreground">{cert.id}</p>
+                      <div className="flex items-center gap-2">
                         <Button size="sm" variant="outline" asChild>
                           <Link href={`/verify?id=${cert.id}`}>View</Link>
                         </Button>
+                        {!cert.isRevoked && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleRevokeCertificate(cert.id)}
+                          >
+                            <XCircle className="mr-1 h-3 w-3" />
+                            Revoke
+                          </Button>
+                        )}
                       </div>
-                      {!cert.isRevoked && (
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleRevokeCertificate(cert.id)}
-                        >
-                          <XCircle className="mr-1 h-3 w-3" />
-                          Revoke
-                        </Button>
-                      )}
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             )}
           </Card>

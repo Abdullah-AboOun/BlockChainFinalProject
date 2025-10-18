@@ -135,7 +135,6 @@ export default function IssueCertificatePage() {
           <div className="flex items-center gap-3">
             <IssuerProfileCard />
             {isConnected && <ChainSwitcher />}
-            <WalletConnectButton />
           </div>
         </div>
       </header>

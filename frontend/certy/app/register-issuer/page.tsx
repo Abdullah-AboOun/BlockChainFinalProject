@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useWeb3 } from "@/contexts/web3-context"
 import { WalletConnectButton } from "@/components/wallet-connect-button"
@@ -17,6 +17,7 @@ import { Shield, Building2, AlertCircle, CheckCircle2, Copy, Check } from "lucid
 import { saveIssuer, getIssuerByAddress } from "@/lib/storage"
 import { HARDHAT_WALLETS, copyToClipboard } from "@/lib/hardhat-wallets"
 import Link from "next/link"
+import { IssuerProfileCard } from "@/components/issuer-profile-card"
 
 export default function RegisterIssuerPage() {
   const router = useRouter()
@@ -26,6 +27,7 @@ export default function RegisterIssuerPage() {
   const [error, setError] = useState("")
   const [selectedWallet, setSelectedWallet] = useState("")
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -35,6 +37,11 @@ export default function RegisterIssuerPage() {
     country: "",
     website: "",
   })
+
+  useEffect(() => {
+    const issuerAddress = localStorage.getItem("issuerAddress")
+    setIsLoggedIn(!!issuerAddress)
+  }, [])
 
   const handleCopyAddress = (address: string) => {
     copyToClipboard(address)
@@ -105,8 +112,13 @@ export default function RegisterIssuerPage() {
             <span className="text-xl font-semibold">CertifyChain</span>
           </Link>
           <div className="flex items-center gap-3">
-            {isConnected && <ChainSwitcher />}
-            <WalletConnectButton />
+            {isLoggedIn && <IssuerProfileCard />}
+            {!isLoggedIn && (
+              <>
+                {isConnected && <ChainSwitcher />}
+                <WalletConnectButton />
+              </>
+            )}
           </div>
         </div>
       </header>
