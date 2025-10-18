@@ -13,8 +13,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Shield, Building2, AlertCircle, CheckCircle2 } from "lucide-react"
+import { Shield, Building2, AlertCircle, CheckCircle2, Copy, Check } from "lucide-react"
 import { saveIssuer, getIssuerByAddress } from "@/lib/storage"
+import { HARDHAT_WALLETS, copyToClipboard } from "@/lib/hardhat-wallets"
 import Link from "next/link"
 
 export default function RegisterIssuerPage() {
@@ -23,6 +24,8 @@ export default function RegisterIssuerPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
+  const [selectedWallet, setSelectedWallet] = useState("")
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -33,16 +36,23 @@ export default function RegisterIssuerPage() {
     website: "",
   })
 
+  const handleCopyAddress = (address: string) => {
+    copyToClipboard(address)
+    setCopiedAddress(address)
+    setTimeout(() => setCopiedAddress(null), 2000)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!address) {
-      setError("Please connect your wallet first")
+    // Validate wallet selection
+    if (!selectedWallet) {
+      setError("Please select a Hardhat wallet address")
       return
     }
 
     // Check if already registered
-    const existingIssuer = getIssuerByAddress(address)
+    const existingIssuer = getIssuerByAddress(selectedWallet)
     if (existingIssuer) {
       setError("This wallet address is already registered as an issuer")
       return
@@ -57,7 +67,7 @@ export default function RegisterIssuerPage() {
 
       // Save issuer data
       saveIssuer({
-        address,
+        address: selectedWallet,
         name: formData.name,
         email: formData.email,
         organizationType: formData.organizationType,
@@ -108,12 +118,7 @@ export default function RegisterIssuerPage() {
             </p>
           </div>
 
-          {!isConnected ? (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>Please connect your Web3 wallet to register as a certificate issuer.</AlertDescription>
-            </Alert>
-          ) : success ? (
+          {success ? (
             <Card className="p-8 text-center">
               <CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-green-500" />
               <h2 className="mb-2 text-2xl font-bold">Registration Successful!</h2>
@@ -123,7 +128,63 @@ export default function RegisterIssuerPage() {
               <p className="text-sm text-muted-foreground">Redirecting to your dashboard...</p>
             </Card>
           ) : (
-            <Card className="p-6">
+            <>
+              {/* Wallet Selection */}
+              <div className="mb-8 space-y-4">
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Select one of the 20 pre-funded Hardhat test wallets below to register your organization.
+                  </AlertDescription>
+                </Alert>
+
+                <Card className="p-4">
+                  <h3 className="mb-3 font-semibold">Available Hardhat Wallets</h3>
+                  <div className="grid gap-2 max-h-64 overflow-y-auto">
+                    {HARDHAT_WALLETS.map((wallet) => (
+                      <div
+                        key={wallet.address}
+                        onClick={() => setSelectedWallet(wallet.address)}
+                        className={`flex cursor-pointer items-center justify-between rounded-lg border-2 p-3 transition-all ${
+                          selectedWallet === wallet.address
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        }`}
+                      >
+                        <div>
+                          <p className="font-medium text-sm">{wallet.name}</p>
+                          <p className="text-xs text-muted-foreground font-mono">{wallet.address}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleCopyAddress(wallet.address)
+                          }}
+                          className="ml-2 p-1 hover:bg-secondary rounded"
+                        >
+                          {copiedAddress === wallet.address ? (
+                            <Check className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <Copy className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
+                {selectedWallet && (
+                  <Alert className="bg-blue-50 border-blue-200">
+                    <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                    <AlertDescription className="text-blue-800">
+                      Selected wallet: <span className="font-mono">{selectedWallet}</span>
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+
+              {/* Registration Form */}
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Personal Information */}
                 <div className="space-y-4">
@@ -231,7 +292,7 @@ export default function RegisterIssuerPage() {
                   issuance and verification.
                 </p>
               </form>
-            </Card>
+            </>
           )}
         </div>
       </main>

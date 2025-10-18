@@ -25,11 +25,11 @@ export default function HomePage() {
             </Link>
           </nav>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" asChild>
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
             <Button asChild>
               <Link href="/register-issuer">Register as Issuer</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/verify">Verify Certificate</Link>
             </Button>
           </div>
         </div>

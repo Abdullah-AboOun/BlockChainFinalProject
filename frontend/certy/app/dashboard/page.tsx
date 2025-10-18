@@ -30,22 +30,11 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {!isConnected ? (
-          <div className="mx-auto max-w-2xl">
-            <Alert>
-              <Wallet className="h-4 w-4" />
-              <AlertTitle>Connect Your Wallet</AlertTitle>
-              <AlertDescription>
-                Please connect your Web3 wallet to access the dashboard and manage certificates.
-              </AlertDescription>
-            </Alert>
+        <div className="space-y-8">
+          <div>
+            <h1 className="mb-2 text-3xl font-bold">Dashboard</h1>
+            <p className="text-muted-foreground">Manage your certificates and verifications</p>
           </div>
-        ) : (
-          <div className="space-y-8">
-            <div>
-              <h1 className="mb-2 text-3xl font-bold">Dashboard</h1>
-              <p className="text-muted-foreground">Manage your certificates and verifications</p>
-            </div>
 
             {/* Quick Stats */}
             <div className="grid gap-6 md:grid-cols-3">
@@ -128,12 +117,11 @@ export default function DashboardPage() {
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Getting Started</AlertTitle>
               <AlertDescription>
-                Your wallet is connected! You can now issue certificates, verify existing ones, and manage your
-                blockchain transactions. Make sure you're on the correct network before proceeding.
+                You can now issue certificates, verify existing ones, and manage your blockchain transactions.
+                Optionally connect your wallet to use custom addresses, or use Hardhat test wallets.
               </AlertDescription>
             </Alert>
           </div>
-        )}
       </main>
     </div>
   )

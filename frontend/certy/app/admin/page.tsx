@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Shield, Users, FileCheck, AlertCircle, Building2, XCircle } from "lucide-react"
+import { Shield, Users, FileCheck, AlertCircle, Building2, XCircle, Copy, Check } from "lucide-react"
 import {
   getPlatformStats,
   getIssuers,
@@ -20,12 +20,15 @@ import {
   type StoredCertificate,
 } from "@/lib/storage"
 import { formatAddress } from "@/lib/web3/utils"
+import { ADMIN_WALLET, copyToClipboard } from "@/lib/hardhat-wallets"
 
 export default function AdminPage() {
   const { address, isConnected } = useWeb3()
   const [stats, setStats] = useState(getPlatformStats())
   const [issuers, setIssuers] = useState<StoredIssuer[]>([])
   const [certificates, setCertificates] = useState<StoredCertificate[]>([])
+  const [selectedAdminWallet, setSelectedAdminWallet] = useState<string>("")
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
 
   useEffect(() => {
     loadData()
@@ -35,6 +38,12 @@ export default function AdminPage() {
     setStats(getPlatformStats())
     setIssuers(getIssuers())
     setCertificates(getCertificates())
+  }
+
+  const handleCopyAddress = (addr: string) => {
+    copyToClipboard(addr)
+    setCopiedAddress(addr)
+    setTimeout(() => setCopiedAddress(null), 2000)
   }
 
   const handleRevokeCertificate = (id: string) => {
@@ -57,19 +66,59 @@ export default function AdminPage() {
             <Button variant="ghost" asChild>
               <Link href="/dashboard">Dashboard</Link>
             </Button>
-            {isConnected && <ChainSwitcher />}
-            <WalletConnectButton />
+            {selectedAdminWallet && (
+              <>
+                <span className="text-sm text-muted-foreground font-mono">{formatAddress(selectedAdminWallet)}</span>
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedAdminWallet("")}
+                >
+                  Logout
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {!isConnected ? (
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>Please connect your wallet to access the admin dashboard.</AlertDescription>
-          </Alert>
+        {!selectedAdminWallet ? (
+          <div className="mx-auto max-w-2xl space-y-6">
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Click the button below to login as the admin with the default Hardhat admin wallet.
+              </AlertDescription>
+            </Alert>
+
+            <Card className="p-6">
+              <h2 className="mb-4 text-xl font-semibold">Admin Wallet</h2>
+              <div
+                onClick={() => setSelectedAdminWallet(ADMIN_WALLET.address)}
+                className="flex cursor-pointer items-center justify-between rounded-lg border-2 border-border p-4 transition-all hover:border-primary/50"
+              >
+                <div>
+                  <p className="font-medium">{ADMIN_WALLET.name} (Admin)</p>
+                  <p className="text-xs text-muted-foreground font-mono">{ADMIN_WALLET.address}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleCopyAddress(ADMIN_WALLET.address)
+                  }}
+                  className="ml-2 p-1 hover:bg-secondary rounded"
+                >
+                  {copiedAddress === ADMIN_WALLET.address ? (
+                    <Check className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <Copy className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </button>
+              </div>
+            </Card>
+          </div>
         ) : (
           <div className="space-y-8">
             <div>

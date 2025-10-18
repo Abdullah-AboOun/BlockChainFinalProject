@@ -63,8 +63,9 @@ export function Web3Provider({ children }: { children: ReactNode }) {
     if (!isMetaMaskInstalled()) {
       setWalletState((prev) => ({
         ...prev,
-        error: "MetaMask is not installed. Please install MetaMask to continue.",
+        isConnecting: false,
       }))
+      // Silently fail - MetaMask is optional for local development
       return
     }
 

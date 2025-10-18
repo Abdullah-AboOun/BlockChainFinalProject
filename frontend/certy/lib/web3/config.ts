@@ -1,4 +1,15 @@
 export const SUPPORTED_CHAINS = {
+  localhost: {
+    id: 31337,
+    name: "Hardhat Localhost",
+    rpcUrl: "http://localhost:8545",
+    blockExplorer: "http://localhost:8545",
+    nativeCurrency: {
+      name: "Ether",
+      symbol: "ETH",
+      decimals: 18,
+    },
+  },
   ethereum: {
     id: 1,
     name: "Ethereum Mainnet",
@@ -21,32 +32,20 @@ export const SUPPORTED_CHAINS = {
       decimals: 18,
     },
   },
-  polygon: {
-    id: 137,
-    name: "Polygon Mainnet",
-    rpcUrl: "https://polygon-rpc.com",
-    blockExplorer: "https://polygonscan.com",
-    nativeCurrency: {
-      name: "MATIC",
-      symbol: "MATIC",
-      decimals: 18,
-    },
-  },
 } as const
 
 export type SupportedChainId = keyof typeof SUPPORTED_CHAINS
 
-// Default chain for the application
-export const DEFAULT_CHAIN: SupportedChainId = "sepolia"
+// Default chain for the application (localhost for local development)
+export const DEFAULT_CHAIN: SupportedChainId = "localhost"
 
-// Contract addresses (to be deployed)
+// Contract addresses (loaded from public/deployment.json after deployment)
 export const CONTRACT_ADDRESSES = {
   certificateRegistry: process.env.NEXT_PUBLIC_CERTIFICATE_REGISTRY_ADDRESS || "",
-  feeCollector: process.env.NEXT_PUBLIC_FEE_COLLECTOR_ADDRESS || "",
 } as const
 
 // Fee structure (in wei)
 export const FEES = {
-  certificateIssuance: "10000000000000000", // 0.01 ETH
-  certificateVerification: "1000000000000000", // 0.001 ETH
+  certificateIssuance: "0", // Free for local development
+  certificateVerification: "0", // Free for local development
 } as const
