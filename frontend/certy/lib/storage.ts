@@ -24,6 +24,8 @@ export interface StoredCertificate {
   metadata: string
   isRevoked: boolean
   transactionHash?: string
+  documentData?: string // Base64 encoded document
+  documentName?: string
 }
 
 // Issuer management

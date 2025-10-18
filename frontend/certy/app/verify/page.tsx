@@ -23,6 +23,7 @@ import {
   Hash,
   ExternalLink,
   Building2,
+  Download,
 } from "lucide-react"
 import { getCertificateById, type StoredCertificate } from "@/lib/storage"
 import { WalletConnectButton } from "@/components/wallet-connect-button"
@@ -191,6 +192,47 @@ export default function VerifyPage() {
                 </CardContent>
               </Card>
 
+              {/* Document Preview */}
+              {certificate.documentData && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Certificate Document</CardTitle>
+                    <CardDescription>Attached document preview</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {certificate.documentData.startsWith("data:image") ? (
+                      <div className="w-full rounded-lg border border-border overflow-hidden bg-muted">
+                        <img
+                          src={certificate.documentData}
+                          alt="Certificate Document"
+                          className="w-full h-auto max-h-96 object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-full rounded-lg border border-border p-8 bg-muted text-center">
+                        <FileText className="mx-auto mb-3 h-12 w-12 text-muted-foreground" />
+                        <p className="text-muted-foreground">
+                          {certificate.documentName || "Document"} attached to this certificate
+                        </p>
+                        <Button
+                          variant="outline"
+                          className="mt-4"
+                          onClick={() => {
+                            const link = document.createElement("a")
+                            link.href = certificate.documentData!
+                            link.download = certificate.documentName || `${certificate.id}.pdf`
+                            link.click()
+                          }}
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          Download Document
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Certificate Details */}
               <Card>
                 <CardHeader>
@@ -305,9 +347,21 @@ export default function VerifyPage() {
 
               {/* Actions */}
               <div className="flex gap-4">
-                <Button variant="outline" className="flex-1 bg-transparent" onClick={() => window.print()}>
-                  Print Certificate
-                </Button>
+                {certificate.documentData && (
+                  <Button
+                    variant="outline"
+                    className="flex-1 bg-transparent"
+                    onClick={() => {
+                      const link = document.createElement("a")
+                      link.href = certificate.documentData!
+                      link.download = certificate.documentName || `${certificate.id}.pdf`
+                      link.click()
+                    }}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Certificate
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   className="flex-1 bg-transparent"

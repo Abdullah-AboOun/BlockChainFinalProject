@@ -91,6 +91,15 @@ export default function IssueCertificatePage() {
       const fileContent = await documentFile.text()
       const documentHash = await hashDocument(fileContent)
 
+      // Convert document to base64 for storage
+      const reader = new FileReader()
+      const documentData = await new Promise<string>((resolve) => {
+        reader.onload = () => {
+          resolve(reader.result as string)
+        }
+        reader.readAsDataURL(documentFile)
+      })
+
       // Generate certificate ID
       const timestamp = Date.now()
       const id = `CERT-${documentHash.slice(2, 10)}-${timestamp}`
@@ -112,6 +121,8 @@ export default function IssueCertificatePage() {
         metadata: formData.metadata,
         isRevoked: false,
         transactionHash: mockTxHash,
+        documentData,
+        documentName: documentFile.name,
       })
 
       setCertificateId(id)
