@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Shield, FileCheck, Building2, AlertCircle, Plus, ExternalLink } from "lucide-react"
+import { Shield, FileCheck, Building2, AlertCircle, Plus, ExternalLink, XCircle } from "lucide-react"
 import Link from "next/link"
-import { getIssuerByAddress, getCertificatesByIssuer, type StoredIssuer, type StoredCertificate } from "@/lib/storage"
+import { getIssuerByAddress, getCertificatesByIssuer, revokeCertificate, type StoredIssuer, type StoredCertificate } from "@/lib/storage"
 import { formatAddress } from "@/lib/web3/utils"
 
 export default function IssuerDashboardPage() {
@@ -53,6 +53,17 @@ export default function IssuerDashboardPage() {
     setCertificates(certs)
     setLoading(false)
   }, [issuerAddress, router])
+
+  const handleRevokeCertificate = (id: string) => {
+    if (confirm("Are you sure you want to revoke this certificate? This action cannot be undone.")) {
+      revokeCertificate(id)
+      // Reload certificates
+      if (issuerAddress) {
+        const updatedCerts = getCertificatesByIssuer(issuerAddress)
+        setCertificates(updatedCerts)
+      }
+    }
+  }
 
   if (!issuerAddress || !issuer) {
     return (
@@ -236,11 +247,23 @@ export default function IssuerDashboardPage() {
                         Issued: {new Date(cert.issueDate).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="mb-1 font-mono text-xs text-muted-foreground">{cert.id}</p>
-                      <Button size="sm" variant="outline" asChild>
-                        <Link href={`/verify?id=${cert.id}`}>View</Link>
-                      </Button>
+                    <div className="flex items-center gap-2">
+                      <div className="text-right">
+                        <p className="mb-1 font-mono text-xs text-muted-foreground">{cert.id}</p>
+                        <Button size="sm" variant="outline" asChild>
+                          <Link href={`/verify?id=${cert.id}`}>View</Link>
+                        </Button>
+                      </div>
+                      {!cert.isRevoked && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleRevokeCertificate(cert.id)}
+                        >
+                          <XCircle className="mr-1 h-3 w-3" />
+                          Revoke
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -294,6 +294,15 @@ export default function RegisterIssuerPage() {
                   By registering, you agree to comply with all platform policies and regulations regarding certificate
                   issuance and verification.
                 </p>
+
+                <div className="border-t pt-4">
+                  <p className="text-center text-sm text-muted-foreground">
+                    Already registered?{" "}
+                    <Link href="/issuer/login" className="text-primary hover:underline">
+                      Login to your account
+                    </Link>
+                  </p>
+                </div>
               </form>
             </>
           )}
