@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Shield, FileCheck, Users, Lock, Globe } from "lucide-react"
+import { IssuerProfileCard } from "@/components/issuer-profile-card"
 
 export default function HomePage() {
   return (
@@ -25,6 +26,7 @@ export default function HomePage() {
             </Link>
           </nav>
           <div className="flex items-center gap-3">
+            <IssuerProfileCard />
             <Button variant="ghost" asChild>
               <Link href="/issuer/login">Login</Link>
             </Button>

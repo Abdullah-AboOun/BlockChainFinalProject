@@ -13,6 +13,7 @@ import { Shield, FileCheck, Building2, AlertCircle, Plus, ExternalLink, XCircle 
 import Link from "next/link"
 import { getIssuerByAddress, getCertificatesByIssuer, revokeCertificate, type StoredIssuer, type StoredCertificate } from "@/lib/storage"
 import { formatAddress } from "@/lib/web3/utils"
+import { IssuerProfileCard } from "@/components/issuer-profile-card"
 
 export default function IssuerDashboardPage() {
   const router = useRouter()
@@ -108,6 +109,7 @@ export default function IssuerDashboardPage() {
             <span className="text-xl font-semibold">CertifyChain</span>
           </Link>
           <div className="flex items-center gap-3">
+            <IssuerProfileCard />
             <ChainSwitcher />
             <WalletConnectButton />
           </div>

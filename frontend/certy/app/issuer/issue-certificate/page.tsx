@@ -18,6 +18,7 @@ import { Shield, FileCheck, AlertCircle, Upload, CheckCircle2 } from "lucide-rea
 import Link from "next/link"
 import { getIssuerByAddress, saveCertificate } from "@/lib/storage"
 import { hashDocument } from "@/lib/web3/utils"
+import { IssuerProfileCard } from "@/components/issuer-profile-card"
 
 export default function IssueCertificatePage() {
   const router = useRouter()
@@ -132,6 +133,7 @@ export default function IssueCertificatePage() {
             <span className="text-xl font-semibold">CertifyChain</span>
           </Link>
           <div className="flex items-center gap-3">
+            <IssuerProfileCard />
             {isConnected && <ChainSwitcher />}
             <WalletConnectButton />
           </div>

@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Shield, AlertCircle } from "lucide-react"
 import { getIssuers } from "@/lib/storage"
 import { HARDHAT_WALLETS, copyToClipboard } from "@/lib/hardhat-wallets"
+import { IssuerProfileCard } from "@/components/issuer-profile-card"
 
 export default function IssuerLoginPage() {
   const router = useRouter()
@@ -75,14 +76,21 @@ export default function IssuerLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <Link href="/" className="inline-flex items-center gap-2">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border bg-card">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4">
+          <Link href="/" className="flex items-center gap-2">
             <Shield className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-semibold">CertifyChain</span>
+            <span className="text-xl font-semibold">CertifyChain</span>
           </Link>
+          <IssuerProfileCard />
         </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-muted/30 px-4 py-12">
+        <div className="w-full max-w-md">
 
         <Card>
           <CardHeader>
@@ -183,7 +191,8 @@ export default function IssuerLoginPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+        </div>
+      </main>
     </div>
   )
 }
