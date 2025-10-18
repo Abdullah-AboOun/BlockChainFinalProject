@@ -50,3 +50,6 @@ coverage/
 artifacts/
 cache/
 typechain/
+
+
+*.md
