@@ -79,6 +79,9 @@ export default function RegisterIssuerPage() {
         certificatesIssued: 0,
       })
 
+      // Save issuer address to localStorage for dashboard access
+      localStorage.setItem("issuerAddress", selectedWallet)
+
       setSuccess(true)
 
       // Redirect to issuer dashboard after 2 seconds

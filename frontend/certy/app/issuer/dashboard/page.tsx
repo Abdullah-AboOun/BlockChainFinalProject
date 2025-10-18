@@ -20,15 +20,26 @@ export default function IssuerDashboardPage() {
   const [issuer, setIssuer] = useState<StoredIssuer | null>(null)
   const [certificates, setCertificates] = useState<StoredCertificate[]>([])
   const [loading, setLoading] = useState(true)
+  const [issuerAddress, setIssuerAddress] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!isConnected || !address) {
+    // Try to get issuer address from localStorage (saved during registration)
+    const storedIssuerAddress = localStorage.getItem("issuerAddress")
+    if (storedIssuerAddress) {
+      setIssuerAddress(storedIssuerAddress)
+    } else if (isConnected && address) {
+      setIssuerAddress(address)
+    }
+  }, [isConnected, address])
+
+  useEffect(() => {
+    if (!issuerAddress) {
       setLoading(false)
       return
     }
 
-    // Load issuer data
-    const issuerData = getIssuerByAddress(address)
+    // Load issuer data using the issuer address
+    const issuerData = getIssuerByAddress(issuerAddress)
     if (!issuerData) {
       // Not registered, redirect to registration
       router.push("/register-issuer")
@@ -38,12 +49,12 @@ export default function IssuerDashboardPage() {
     setIssuer(issuerData)
 
     // Load certificates
-    const certs = getCertificatesByIssuer(address)
+    const certs = getCertificatesByIssuer(issuerAddress)
     setCertificates(certs)
     setLoading(false)
-  }, [address, isConnected, router])
+  }, [issuerAddress, router])
 
-  if (!isConnected) {
+  if (!issuerAddress || !issuer) {
     return (
       <div className="min-h-screen bg-background">
         <header className="border-b border-border bg-card">
@@ -58,7 +69,7 @@ export default function IssuerDashboardPage() {
         <main className="container mx-auto px-4 py-8">
           <Alert>
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>Please connect your wallet to access the issuer dashboard.</AlertDescription>
+            <AlertDescription>Please register as an issuer first to access the dashboard.</AlertDescription>
           </Alert>
         </main>
       </div>

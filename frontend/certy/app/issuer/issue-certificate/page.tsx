@@ -27,6 +27,7 @@ export default function IssueCertificatePage() {
   const [error, setError] = useState("")
   const [certificateId, setCertificateId] = useState("")
   const [documentFile, setDocumentFile] = useState<File | null>(null)
+  const [issuerAddress, setIssuerAddress] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     recipientName: "",
@@ -37,13 +38,23 @@ export default function IssueCertificatePage() {
   })
 
   useEffect(() => {
-    if (isConnected && address) {
-      const issuer = getIssuerByAddress(address)
+    // Try to get issuer address from localStorage
+    const storedIssuerAddress = localStorage.getItem("issuerAddress")
+    if (storedIssuerAddress) {
+      setIssuerAddress(storedIssuerAddress)
+    } else if (isConnected && address) {
+      setIssuerAddress(address)
+    }
+  }, [isConnected, address])
+
+  useEffect(() => {
+    if (issuerAddress) {
+      const issuer = getIssuerByAddress(issuerAddress)
       if (!issuer) {
         router.push("/register-issuer")
       }
     }
-  }, [address, isConnected, router])
+  }, [issuerAddress, router])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -55,8 +66,8 @@ export default function IssueCertificatePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!address) {
-      setError("Please connect your wallet first")
+    if (!issuerAddress) {
+      setError("Please register as an issuer first")
       return
     }
 
@@ -65,7 +76,7 @@ export default function IssueCertificatePage() {
       return
     }
 
-    const issuer = getIssuerByAddress(address)
+    const issuer = getIssuerByAddress(issuerAddress)
     if (!issuer) {
       setError("You must be registered as an issuer")
       return
@@ -89,7 +100,7 @@ export default function IssueCertificatePage() {
       // Save certificate
       saveCertificate({
         id,
-        issuerAddress: address,
+        issuerAddress: issuerAddress,
         issuerName: issuer.organizationName,
         recipientName: formData.recipientName,
         recipientEmail: formData.recipientEmail,
@@ -135,12 +146,7 @@ export default function IssueCertificatePage() {
             <p className="text-muted-foreground">Create and register a new certificate on the blockchain</p>
           </div>
 
-          {!isConnected ? (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>Please connect your Web3 wallet to issue certificates.</AlertDescription>
-            </Alert>
-          ) : success ? (
+        {success ? (
             <Card className="p-8 text-center">
               <CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-green-500" />
               <h2 className="mb-2 text-2xl font-bold">Certificate Issued Successfully!</h2>
